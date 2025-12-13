@@ -69,6 +69,5 @@ Client runs on `http://localhost:5173`
 ## Tech Stack
 
 - **Frontend**: React 18, Vite, Tailwind CSS
-- **Backend**: Python 3.11+, FastAPI, Google Gemini 1.5 Flash
+- **Backend**: Python 3.11+, FastAPI, Google Gemini 2.5 Flash
 - **API**: Google Generative AI SDK
-

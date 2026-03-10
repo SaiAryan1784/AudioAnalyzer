@@ -43,7 +43,12 @@ def _build_async_url(url: str) -> tuple[str, dict]:
     return clean_url, connect_args
 
 
-_url, _connect_args = _build_async_url(settings.DATABASE_URL)
+if not settings.DATABASE_URL:
+    # During Vercel build, environment variables might be absent.
+    # Provide a dummy URL so it doesn't crash the import, but will crash if executed.
+    _url, _connect_args = "postgresql+asyncpg://dummy:dummy@localhost/dummy", {}
+else:
+    _url, _connect_args = _build_async_url(settings.DATABASE_URL)
 
 engine = create_async_engine(
     _url,

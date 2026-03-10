@@ -50,9 +50,9 @@ def upgrade() -> None:
                     'note', 'Legacy evidence item'
                 )
             )
-            FROM unnest(evidence) AS elem
+            FROM jsonb_array_elements_text(evidence) AS elem
         )
-        WHERE evidence IS NOT NULL AND array_length(evidence, 1) > 0
+        WHERE evidence IS NOT NULL AND jsonb_typeof(evidence) = 'array' AND jsonb_array_length(evidence) > 0
     """)
 
     # Drop old array column and rename new one

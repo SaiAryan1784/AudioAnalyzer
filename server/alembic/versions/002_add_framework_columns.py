@@ -15,19 +15,27 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Add framework columns to analyses table
-    op.add_column('analyses',
-        sa.Column('framework_id', sa.String(), nullable=False, server_default='rosenshine')
-    )
-    op.add_column('analyses',
-        sa.Column('framework_name', sa.String(), nullable=True)
-    )
+    # Handle partial migrations gracefully on Render
+    try:
+        op.add_column('analyses',
+            sa.Column('framework_id', sa.String(), nullable=False, server_default='rosenshine')
+        )
+    except sa.exc.ProgrammingError:
+        pass # Column already exists
 
-    # Convert evidence column from ARRAY(Text) to JSONB for structured evidence
-    # First add new JSONB column
-    op.add_column('principle_scores',
-        sa.Column('evidence_json', postgresql.JSONB(), nullable=True)
-    )
+    try:
+        op.add_column('analyses',
+            sa.Column('framework_name', sa.String(), nullable=True)
+        )
+    except sa.exc.ProgrammingError:
+        pass
+
+    try:
+        op.add_column('principle_scores',
+            sa.Column('evidence_json', postgresql.JSONB(), nullable=True)
+        )
+    except sa.exc.ProgrammingError:
+        pass
 
     # Migrate existing data: convert array of strings to JSONB array of simple dicts
     op.execute("""

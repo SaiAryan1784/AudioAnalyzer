@@ -64,7 +64,7 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#06080F] text-[#F0EDE8] font-body selection:bg-[#E8FF47] selection:text-[#06080F]">
+        <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen lg:overflow-hidden bg-[#06080F] text-[#F0EDE8] font-body selection:bg-[#E8FF47] selection:text-[#06080F]">
             {/* Left Panel - Dynamic Brand Showcase (Mirrors Login) */}
             <div className="hidden lg:flex flex-col w-[42%] bg-[#0D1020] relative overflow-hidden p-12 justify-between border-r border-white/5">
                 <div
@@ -121,13 +121,13 @@ export default function SignupPage() {
             </div>
 
             {/* Right Panel - Auth Form */}
-            <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden h-full">
-                <div className="w-full max-w-[440px] mx-auto z-10">
+            <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative min-h-screen lg:min-h-0 overflow-y-auto">
+                <div className="w-full max-w-[440px] mx-auto z-10 py-8 lg:py-0">
                     <div className="animate-[fade-in-up_0.6s_cubic-bezier(0.16,1,0.3,1)_forwards]">
                         {/* Header */}
                         <div className="lg:hidden flex items-center justify-center gap-3 mb-6">
-                            <img src="/audianalyzer-favicon.svg" alt="AudioAnalyzer" className="w-[32px] h-[32px] rounded-[8px]" />
-                            <span className="font-display font-bold text-[18px] tracking-tight text-white">AudioAnalyzer</span>
+                            <img src="/audianalyzer-favicon.svg" alt="AudioAnalyzer" className="w-[36px] h-[36px] rounded-[10px]" />
+                            <span className="font-display font-bold text-[20px] tracking-tight text-white">AudioAnalyzer</span>
                         </div>
                         <h1 className="font-display font-extrabold text-[32px] md:text-[38px] tracking-tighter leading-[1] text-white mb-1">
                             Create account

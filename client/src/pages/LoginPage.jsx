@@ -43,7 +43,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-[#06080F] text-[#F0EDE8] font-body selection:bg-[#E8FF47] selection:text-[#06080F]">
+        <div className="flex flex-col lg:flex-row min-h-screen lg:h-screen lg:overflow-hidden bg-[#06080F] text-[#F0EDE8] font-body selection:bg-[#E8FF47] selection:text-[#06080F]">
             {/* Left Panel - Dynamic Brand Showcase */}
             <div className="hidden lg:flex flex-col w-[42%] bg-[#0D1020] relative overflow-hidden p-12 justify-between border-r border-white/5">
                 {/* Noise texture overlay */}
@@ -108,15 +108,15 @@ export default function LoginPage() {
             </div>
 
             {/* Right Panel - Auth Form */}
-            <div className="flex-1 flex flex-col items-center justify-center p-6 relative h-full">
+            <div className="flex-1 flex flex-col items-center justify-center p-6 md:p-12 relative min-h-screen lg:min-h-0 overflow-y-auto">
                 {/* Subtle Background Glow for mobile */}
-                <div className="lg:hidden absolute top-[-100px] left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-[#E8FF47]/10 blur-[100px] pointer-events-none" />
+                <div className="lg:hidden absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-[#E8FF47]/10 blur-[100px] pointer-events-none" />
 
-                <div className="w-full max-w-[400px] mx-auto z-10">
+                <div className="w-full max-w-[400px] mx-auto z-10 py-8 lg:py-0">
                     {/* Centered Logo for Mobile */}
-                    <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-                        <img src="/audianalyzer-favicon.svg" alt="AudioAnalyzer" className="w-[32px] h-[32px] rounded-[10px]" />
-                        <span className="font-display font-bold text-[18px] tracking-tight">AudioAnalyzer</span>
+                    <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
+                        <img src="/audianalyzer-favicon.svg" alt="AudioAnalyzer" className="w-[36px] h-[36px] rounded-[10px]" />
+                        <span className="font-display font-bold text-[20px] tracking-tight text-white">AudioAnalyzer</span>
                     </div>
 
                     <div className="animate-[fade-in-up_0.6s_cubic-bezier(0.16,1,0.3,1)_forwards]">

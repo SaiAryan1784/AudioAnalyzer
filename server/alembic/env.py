@@ -7,6 +7,13 @@ for both online and offline migrations.
 
 from logging.config import fileConfig
 
+import os
+import sys
+
+# Add the server directory to the sys.path so Alembic can find 'app'.
+# __file__ is server/alembic/env.py, so dirname(dirname(__file__)) is server/
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 

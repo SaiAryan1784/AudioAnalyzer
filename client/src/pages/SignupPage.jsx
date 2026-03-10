@@ -60,7 +60,6 @@ export default function SignupPage() {
                             onSuccess={handleGoogleSuccess}
                             onError={() => setError("Google Sign-Up failed.")}
                             theme="filled_black"
-                            width="100%"
                             text="continue_with"
                         />
                         {loading && (

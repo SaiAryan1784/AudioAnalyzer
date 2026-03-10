@@ -59,7 +59,6 @@ export default function LoginPage() {
                             onSuccess={handleGoogleSuccess}
                             onError={() => setError("Google Sign-In failed.")}
                             theme="filled_black"
-                            width="100%"
                             text="continue_with"
                         />
                         {loading && (

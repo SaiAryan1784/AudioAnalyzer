@@ -55,6 +55,17 @@ async def health():
     return {"status": "ok"}
 
 
+import traceback
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "traceback": traceback.format_exc()}
+    )
+
 @app.get("/")
 async def root():
     """Root endpoint — basic service info."""

@@ -21,11 +21,7 @@ from app.routes import router as api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create database tables on startup (idempotent)."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     yield
-    await engine.dispose()
 
 
 app = FastAPI(

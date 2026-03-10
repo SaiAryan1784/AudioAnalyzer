@@ -3,7 +3,7 @@
  * Updated for multi-framework support.
  */
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://audio-analyzer-xziz.vercel.app" : "http://localhost:8000");
 
 let accessToken = null;
 

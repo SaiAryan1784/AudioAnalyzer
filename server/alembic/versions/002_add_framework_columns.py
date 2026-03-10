@@ -15,27 +15,28 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Handle partial migrations gracefully on Render
-    try:
+    # Use inspector to check if columns exist before creating them
+    # to avoid Postgres transaction aborts on DuplicateColumn errors.
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    
+    analyses_columns = [col['name'] for col in inspector.get_columns('analyses')]
+    principle_scores_columns = [col['name'] for col in inspector.get_columns('principle_scores')]
+
+    if 'framework_id' not in analyses_columns:
         op.add_column('analyses',
             sa.Column('framework_id', sa.String(), nullable=False, server_default='rosenshine')
         )
-    except sa.exc.ProgrammingError:
-        pass # Column already exists
-
-    try:
+    
+    if 'framework_name' not in analyses_columns:
         op.add_column('analyses',
             sa.Column('framework_name', sa.String(), nullable=True)
         )
-    except sa.exc.ProgrammingError:
-        pass
 
-    try:
+    if 'evidence_json' not in principle_scores_columns:
         op.add_column('principle_scores',
             sa.Column('evidence_json', postgresql.JSONB(), nullable=True)
         )
-    except sa.exc.ProgrammingError:
-        pass
 
     # Migrate existing data: convert array of strings to JSONB array of simple dicts
     op.execute("""
@@ -55,8 +56,10 @@ def upgrade() -> None:
     """)
 
     # Drop old array column and rename new one
-    op.drop_column('principle_scores', 'evidence')
-    op.alter_column('principle_scores', 'evidence_json', new_column_name='evidence')
+    if 'evidence' in principle_scores_columns and 'evidence_json' in principle_scores_columns:
+        # We only drop the old 'evidence' if we still have it AND we successfully created evidence_json
+        op.drop_column('principle_scores', 'evidence')
+        op.alter_column('principle_scores', 'evidence_json', new_column_name='evidence')
 
 
 def downgrade() -> None:

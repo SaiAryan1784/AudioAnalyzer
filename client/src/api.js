@@ -7,7 +7,7 @@ let _envUrl = import.meta.env.VITE_API_URL;
 if (_envUrl && !_envUrl.startsWith("http")) {
     _envUrl = `https://${_envUrl}`;
 }
-const API_URL = _envUrl || (import.meta.env.PROD ? "https://audioanalyzer-h9yu.onrender.com" : "http://localhost:8000");
+const API_URL = _envUrl || "http://localhost:8000";
 
 let accessToken = null;
 

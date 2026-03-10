@@ -133,7 +133,7 @@ async def login(
         value=refresh,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
     )
     return TokenResponse(
@@ -278,7 +278,7 @@ async def google_auth(
         value=refresh,
         httponly=True,
         secure=True,
-        samesite="lax",
+        samesite="none",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
     )
     return TokenResponse(

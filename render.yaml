@@ -1,11 +1,23 @@
 services:
   - type: web
     name: audio-analyzer-api
-    env: python
+    runtime: python
     region: oregon
-    buildCommand: "cd server && pip install -r requirements.txt"
-    startCommand: "cd server && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    rootDir: server
+    buildCommand: "pip install -r requirements.txt && alembic upgrade head"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1"
     envVars:
-      - key: GEMINI_API_KEY
+      - key: DATABASE_URL
         sync: false
-
+      - key: ASSEMBLYAI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: LANGFUSE_SECRET_KEY
+        sync: false
+      - key: LANGFUSE_PUBLIC_KEY
+        sync: false
+      - key: LANGFUSE_HOST
+        value: https://cloud.langfuse.com

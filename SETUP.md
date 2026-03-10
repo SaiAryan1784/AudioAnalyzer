@@ -1,40 +1,61 @@
-# Quick Setup Guide
+# AudioAnalyzer — Setup Guide
 
-## Initial Setup
+## Prerequisites
+- Python 3.11+
+- Node.js 18+
+- ffmpeg (`sudo apt install ffmpeg` on Ubuntu, `brew install ffmpeg` on Mac)
 
-### Backend
+## Backend
+
 ```bash
 cd server
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-cp env.example .env
 ```
 
-Edit `.env` and add your Gemini API key:
-```
-GEMINI_API_KEY=your_key_here
+Copy the `.env` file into `server/` (or ensure it's at the project root) with:
+
+```env
+DATABASE_URL=postgresql://...@neon.tech/neondb?sslmode=require
+ASSEMBLYAI_API_KEY=...
+GROQ_API_KEY=...
+SECRET_KEY=<generate: python -c "import secrets; print(secrets.token_hex(32))">
+LANGFUSE_SECRET_KEY=...
+LANGFUSE_PUBLIC_KEY=...
+LANGFUSE_HOST=https://cloud.langfuse.com
 ```
 
-Run server:
+Run the server:
 ```bash
-./run.sh
+cd server
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Frontend
+Tables are created automatically on startup. For migrations:
+```bash
+cd server
+alembic revision --autogenerate -m "description"
+alembic upgrade head
+```
+
+## Frontend
+
 ```bash
 cd client
 npm install
-./run.sh
+npm run dev
 ```
 
-## Testing
+Create `client/.env` (optional):
+```env
+VITE_API_URL=http://localhost:8000
+```
 
-1. Open browser to `http://localhost:5173`
-2. Upload an MP3 or WAV audio file
-3. Wait for analysis
-4. Click timestamps on feedback cards to seek audio
+Open http://localhost:5173
 
-## API Key
+## Deployment
 
-Get your free Gemini API key from:
-https://makersuite.google.com/app/apikey
-
+- **Backend**: Deploy `server/` to Render (see `render.yaml`)
+- **Frontend**: Deploy `client/` to Vercel (see `vercel.json`)
+- **Keep-alive**: Set up UptimeRobot to ping `/health` every 5 min

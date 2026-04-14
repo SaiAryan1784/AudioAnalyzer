@@ -13,6 +13,10 @@ import app.frameworks.sales_spin        # noqa: F401
 import app.frameworks.interview_star    # noqa: F401
 import app.frameworks.meeting           # noqa: F401
 import app.frameworks.public_speaking   # noqa: F401
+import app.frameworks.customer_service  # noqa: F401
+import app.frameworks.podcast           # noqa: F401
+import app.frameworks.language_speaking # noqa: F401
+import app.frameworks.counseling        # noqa: F401
 
 
 def get_framework(framework_id: str) -> AnalysisFramework | None:

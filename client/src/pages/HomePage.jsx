@@ -6,18 +6,34 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFrameworks } from "../api";
+import { useAuth } from "../context/AuthContext";
+import OnboardingModal from "../components/OnboardingModal";
 
 export default function HomePage() {
     const [frameworks, setFrameworks] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading]       = useState(true);
+    const [fetchError, setFetchError] = useState(false);
+    const [showOnboarding, setShowOnboarding] = useState(false);
     const navigate = useNavigate();
+    const { user } = useAuth();
 
-    useEffect(() => {
+    const load = () => {
+        setFetchError(false);
+        setLoading(true);
         getFrameworks()
             .then(setFrameworks)
-            .catch(() => { })
+            .catch(() => setFetchError(true))
             .finally(() => setLoading(false));
-    }, []);
+    };
+
+    useEffect(() => { load(); }, []);
+
+    // Show onboarding modal for new users who haven't completed it yet
+    useEffect(() => {
+        if (user && user.onboarding_completed === false) {
+            setShowOnboarding(true);
+        }
+    }, [user]);
 
     const handleSelect = (frameworkId) => {
         navigate(`/upload?framework=${frameworkId}`);
@@ -31,7 +47,32 @@ export default function HomePage() {
         );
     }
 
+    if (fetchError) {
+        return (
+            <div className="empty-state">
+                <div className="empty-icon">⚠</div>
+                <h2>Could not load frameworks</h2>
+                <p>Check your connection and try again.</p>
+                <button className="btn-primary" onClick={load} style={{ marginTop: "1rem" }}>
+                    Retry
+                </button>
+            </div>
+        );
+    }
+
+    if (!loading && frameworks.length === 0) {
+        return (
+            <div className="empty-state">
+                <div className="empty-icon">📭</div>
+                <h2>No frameworks available</h2>
+                <p>Contact support if this persists.</p>
+            </div>
+        );
+    }
+
     return (
+        <>
+        {showOnboarding && <OnboardingModal onClose={() => setShowOnboarding(false)} />}
         <div className="home-page">
             <div className="home-header">
                 <h1>What are you analyzing today?</h1>
@@ -65,5 +106,6 @@ export default function HomePage() {
                 </a>
             </div>
         </div>
+        </>
     );
 }

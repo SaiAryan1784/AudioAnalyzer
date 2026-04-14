@@ -30,6 +30,15 @@ class Settings:
     LANGFUSE_PUBLIC_KEY: str = os.environ.get("LANGFUSE_PUBLIC_KEY", "")
     LANGFUSE_HOST: str = os.environ.get("LANGFUSE_HOST", "https://cloud.langfuse.com")
 
+    # ── Email (Resend) ──────────────────────────────────────────────────
+    RESEND_API_KEY: str = os.environ.get("RESEND_API_KEY", "")
+    EMAIL_FROM: str = os.environ.get("EMAIL_FROM", "AudioAnalyzer <noreply@audioanalyzer.app>")
+    FRONTEND_URL: str = os.environ.get("FRONTEND_URL", "https://audio-analyzer-beta.vercel.app")
+
+    # ── Token Expiry ────────────────────────────────────────────────────
+    PASSWORD_RESET_EXPIRE_HOURS: int = 1
+    EMAIL_VERIFY_EXPIRE_HOURS: int = 24
+
     # ── Rate Limits ─────────────────────────────────────────────────────
     WEEKLY_ANALYSIS_LIMIT: int = 3
     MIN_GAP_MINUTES: int = 30

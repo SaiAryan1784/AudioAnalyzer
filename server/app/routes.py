@@ -7,7 +7,7 @@ import shutil
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, Query, UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -214,20 +214,52 @@ async def get_results(
     return _build_analysis_response(analysis)
 
 
+# ─── Cancel / delete job ─────────────────────────────────────────────────────────
+
+@router.delete("/jobs/{job_id}", status_code=204)
+async def cancel_job(
+    job_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Cancel an in-progress job or delete a completed/failed job record."""
+    result = await db.execute(
+        select(Job).where(
+            Job.id == uuid.UUID(job_id),
+            Job.user_id == current_user.id,
+        )
+    )
+    job = result.scalar_one_or_none()
+    if not job:
+        raise HTTPException(404, "Job not found")
+
+    # Mark as failed so any running pipeline step exits gracefully
+    if job.status not in ("complete", "failed"):
+        job.status = "failed"
+        job.error  = "Cancelled by user"
+        await db.commit()
+    else:
+        await db.delete(job)
+        await db.commit()
+
+
 # ─── History ─────────────────────────────────────────────────────────────────────
 
 @router.get("/history", response_model=list[AnalysisResponse])
 async def get_history(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
+    limit: int  = Query(50,  ge=1, le=200),
+    offset: int = Query(0,   ge=0),
 ):
-    """Fetch the user's analysis history with dimension scores."""
+    """Fetch the user's analysis history with dimension scores (paginated)."""
     result = await db.execute(
         select(Analysis)
         .where(Analysis.user_id == current_user.id)
         .options(selectinload(Analysis.dimension_scores))
         .order_by(Analysis.created_at.desc())
-        .limit(50)
+        .limit(limit)
+        .offset(offset)
     )
     analyses = result.scalars().all()
     return [_build_analysis_response(a) for a in analyses]

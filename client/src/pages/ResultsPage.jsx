@@ -10,7 +10,6 @@ import {
     ResponsiveContainer,
 } from "recharts";
 import { getResults } from "../api";
-import AudioPlayer from "../components/AudioPlayer";
 
 function formatDuration(s) {
     if (!s) return "0:00";
@@ -52,7 +51,7 @@ export default function ResultsPage() {
     const [analysis, setAnalysis] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [seekTime, setSeekTime] = useState(null);
+    const [copiedKey, setCopiedKey] = useState(null);
 
     useEffect(() => {
         if (!jobId) return;
@@ -75,8 +74,13 @@ export default function ResultsPage() {
         tryFetch();
     }, [jobId]);
 
-    const handleSeek = useCallback((ts) => setSeekTime(ts), []);
-    const clearSeek = useCallback(() => setSeekTime(null), []);
+    const copyEvidence = useCallback((key, timestamp, text) => {
+        const label = `${formatTimestamp(timestamp)} — "${text}"`;
+        navigator.clipboard.writeText(label).then(() => {
+            setCopiedKey(key);
+            setTimeout(() => setCopiedKey(null), 2000);
+        });
+    }, []);
 
     if (loading) {
         return (
@@ -227,21 +231,37 @@ export default function ResultsPage() {
                             <div className="dim-evidence-col">
                                 <div className="dim-col-heading">Evidence from transcript</div>
                                 <div className="evidence-list">
-                                    {(d.evidence || []).filter(ev => typeof ev === "object").map((ev, i) => (
-                                        <button
-                                            key={i}
-                                            className="evidence-item"
-                                            onClick={() => handleSeek(ev.timestamp)}
-                                            title={`Seek to ${formatTimestamp(ev.timestamp)}`}
-                                        >
-                                            <div className="ts-badge">▶ {formatTimestamp(ev.timestamp)}</div>
-                                            <div className="evidence-content">
-                                                <span className="evidence-speaker">Speaker {ev.speaker}</span>
-                                                <span className="evidence-quote">"{ev.text}"</span>
-                                                <span className="evidence-note">{ev.note}</span>
+                                    {(d.evidence || []).filter(ev => typeof ev === "object").map((ev, i) => {
+                                        const key = `${d.dimension_number}-${i}`;
+                                        const copied = copiedKey === key;
+                                        return (
+                                            <div key={i} className="evidence-item" style={{ cursor: "default" }}>
+                                                <div className="ts-badge">{formatTimestamp(ev.timestamp)}</div>
+                                                <div className="evidence-content" style={{ flex: 1 }}>
+                                                    <span className="evidence-speaker">Speaker {ev.speaker}</span>
+                                                    <span className="evidence-quote">"{ev.text}"</span>
+                                                    {ev.note && <span className="evidence-note">{ev.note}</span>}
+                                                </div>
+                                                <button
+                                                    onClick={() => copyEvidence(key, ev.timestamp, ev.text)}
+                                                    title="Copy to clipboard"
+                                                    style={{
+                                                        flexShrink: 0,
+                                                        background: "none",
+                                                        border: "none",
+                                                        cursor: "pointer",
+                                                        color: copied ? "var(--primary)" : "var(--text-muted)",
+                                                        fontSize: "0.75rem",
+                                                        padding: "2px 4px",
+                                                        transition: "color 0.2s",
+                                                    }}
+                                                    aria-label="Copy evidence"
+                                                >
+                                                    {copied ? "✓" : "⎘"}
+                                                </button>
                                             </div>
-                                        </button>
-                                    ))}
+                                        );
+                                    })}
                                     {(!d.evidence || d.evidence.filter(ev => typeof ev === "object").length === 0) && (
                                         <p className="no-evidence">No transcript evidence recorded.</p>
                                     )}
@@ -260,18 +280,15 @@ export default function ResultsPage() {
                 ))}
             </div>
 
-            {/* ── Sticky audio player ───────────────────────────────── */}
-            <div className="player-sticky">
-                <AudioPlayer
-                    audioUrl={null}
-                    analysisResults={analysis}
-                    seekTime={seekTime}
-                    onSeek={clearSeek}
-                />
-                <div className="player-no-audio">
-                    <span>🎵 Audio playback unavailable — files are not stored for privacy.</span>
-                    <span className="player-no-audio-sub">Click ▶ timestamps to see the evidence moment in context.</span>
-                </div>
+            {/* ── Privacy note ─────────────────────────────────────── */}
+            <div style={{
+                textAlign: "center",
+                padding: "1.5rem 1rem 3rem",
+                color: "var(--text-muted)",
+                fontSize: "0.75rem",
+                opacity: 0.6,
+            }}>
+                🔒 Audio files are deleted immediately after analysis and are never stored.
             </div>
         </div>
     );

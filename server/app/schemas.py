@@ -35,6 +35,8 @@ class UserResponse(BaseModel):
     id: str
     email: str
     name: str | None
+    email_verified: bool = False
+    onboarding_completed: bool = False
 
     class Config:
         from_attributes = True

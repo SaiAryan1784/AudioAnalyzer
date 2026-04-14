@@ -1,6 +1,5 @@
 /**
  * Root application component — React Router with auth-gated routes.
- * Updated for multi-framework architecture with new pages.
  */
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -10,6 +9,9 @@ import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
 import HomePage from "./pages/HomePage";
 import UploadPage from "./pages/UploadPage";
 import ProcessingPage from "./pages/ProcessingPage";
@@ -26,50 +28,18 @@ export default function App() {
           <Routes>
             <Route element={<Layout />}>
               {/* Public routes */}
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/login"           element={<LoginPage />} />
+              <Route path="/signup"          element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password"  element={<ResetPasswordPage />} />
+              <Route path="/verify-email"    element={<VerifyEmailPage />} />
 
               {/* Protected routes */}
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <HomePage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/upload"
-                element={
-                  <ProtectedRoute>
-                    <UploadPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/processing/:jobId"
-                element={
-                  <ProtectedRoute>
-                    <ProcessingPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/results/:jobId"
-                element={
-                  <ProtectedRoute>
-                    <ResultsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/history"
-                element={
-                  <ProtectedRoute>
-                    <HistoryPage />
-                  </ProtectedRoute>
-                }
-              />
+              <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+              <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
+              <Route path="/processing/:jobId" element={<ProtectedRoute><ProcessingPage /></ProtectedRoute>} />
+              <Route path="/results/:jobId" element={<ProtectedRoute><ResultsPage /></ProtectedRoute>} />
+              <Route path="/history" element={<ProtectedRoute><HistoryPage /></ProtectedRoute>} />
             </Route>
           </Routes>
         </AuthProvider>

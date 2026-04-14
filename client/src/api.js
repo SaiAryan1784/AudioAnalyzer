@@ -178,4 +178,58 @@ export async function getQuota() {
     return res.json();
 }
 
+// ── Password reset ──────────────────────────────────────────────────────────────
+
+export async function forgotPassword(email) {
+    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(_parseError(err, "Request failed"));
+    }
+    return res.json();
+}
+
+export async function resetPassword(token, newPassword) {
+    const res = await fetch(`${API_URL}/auth/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token, new_password: newPassword }),
+    });
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(_parseError(err, "Reset failed"));
+    }
+    return res.json();
+}
+
+// ── Email verification ──────────────────────────────────────────────────────────
+
+export async function verifyEmail(token) {
+    const res = await fetch(`${API_URL}/auth/verify-email?token=${encodeURIComponent(token)}`);
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(_parseError(err, "Verification failed"));
+    }
+    return res.json();
+}
+
+// ── Onboarding ──────────────────────────────────────────────────────────────────
+
+export async function completeOnboarding() {
+    const res = await apiFetch("/auth/complete-onboarding", { method: "POST" });
+    if (!res.ok) throw new Error("Failed to complete onboarding");
+    return res.json();
+}
+
+// ── Job management ──────────────────────────────────────────────────────────────
+
+export async function cancelJob(jobId) {
+    const res = await apiFetch(`/jobs/${jobId}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Failed to cancel job");
+}
+
 export { refreshToken as tryRefresh };

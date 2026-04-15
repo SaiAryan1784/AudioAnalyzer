@@ -6,6 +6,7 @@ Create Date: 2026-04-14
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 revision = '003'
 down_revision = '002'
@@ -39,8 +40,8 @@ def upgrade() -> None:
     if 'password_reset_tokens' not in existing_tables:
         op.create_table(
             'password_reset_tokens',
-            sa.Column('id', sa.Integer(), nullable=False),
-            sa.Column('user_id', sa.Integer(), nullable=False),
+            sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False, server_default=sa.text('gen_random_uuid()')),
+            sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
             sa.Column('token_hash', sa.String(length=64), nullable=False),
             sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
             sa.Column('used', sa.Boolean(), nullable=False, server_default='false'),
@@ -54,8 +55,8 @@ def upgrade() -> None:
     if 'email_verification_tokens' not in existing_tables:
         op.create_table(
             'email_verification_tokens',
-            sa.Column('id', sa.Integer(), nullable=False),
-            sa.Column('user_id', sa.Integer(), nullable=False),
+            sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False, server_default=sa.text('gen_random_uuid()')),
+            sa.Column('user_id', postgresql.UUID(as_uuid=True), nullable=False),
             sa.Column('token_hash', sa.String(length=64), nullable=False),
             sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
             sa.Column('used', sa.Boolean(), nullable=False, server_default='false'),
@@ -67,7 +68,15 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_table('email_verification_tokens')
-    op.drop_table('password_reset_tokens')
-    op.drop_column('users', 'onboarding_completed')
-    op.drop_column('users', 'email_verified')
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    existing_tables = inspector.get_table_names()
+    if 'email_verification_tokens' in existing_tables:
+        op.drop_table('email_verification_tokens')
+    if 'password_reset_tokens' in existing_tables:
+        op.drop_table('password_reset_tokens')
+    users_columns = [col['name'] for col in inspector.get_columns('users')]
+    if 'onboarding_completed' in users_columns:
+        op.drop_column('users', 'onboarding_completed')
+    if 'email_verified' in users_columns:
+        op.drop_column('users', 'email_verified')

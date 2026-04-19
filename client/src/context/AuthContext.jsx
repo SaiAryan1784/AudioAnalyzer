@@ -11,7 +11,10 @@ import {
     getMe,
     setAccessToken,
     tryRefresh,
-    googleSignIn
+    googleSignIn,
+    markSession,
+    clearSession,
+    hasSession,
 } from "../api";
 
 const AuthContext = createContext(null);
@@ -20,13 +23,17 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Try to restore session on mount (silent refresh)
+    // Try to restore session on mount (silent refresh) — only if a session was previously established
     useEffect(() => {
         (async () => {
-            const ok = await tryRefresh();
-            if (ok) {
-                const me = await getMe();
-                if (me) setUser(me);
+            if (hasSession()) {
+                const ok = await tryRefresh();
+                if (ok) {
+                    const me = await getMe();
+                    if (me) setUser(me);
+                } else {
+                    clearSession();
+                }
             }
             setLoading(false);
         })();
@@ -36,6 +43,7 @@ export function AuthProvider({ children }) {
         const data = await apiLogin(email, password);
         setAccessToken(data.access_token);
         setUser(data.user);
+        markSession();
         return data;
     };
 
@@ -43,6 +51,7 @@ export function AuthProvider({ children }) {
         const data = await apiSignup(email, name, password);
         setAccessToken(data.access_token);
         setUser(data.user);
+        markSession();
         return data;
     };
 
@@ -50,11 +59,13 @@ export function AuthProvider({ children }) {
         const data = await googleSignIn(idToken);
         setAccessToken(data.access_token);
         setUser(data.user);
+        markSession();
         return data;
     };
 
     const logout = async () => {
         await apiLogout();
+        clearSession();
         setUser(null);
     };
 

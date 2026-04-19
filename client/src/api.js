@@ -48,22 +48,32 @@ async function apiFetch(path, options = {}) {
 }
 
 async function refreshToken() {
+    const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("timeout")), 5000)
+    );
     try {
-        const res = await fetch(`${API_URL}/auth/refresh`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include", // send httpOnly cookie
-        });
+        const res = await Promise.race([
+            fetch(`${API_URL}/auth/refresh`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+            }),
+            timeout,
+        ]);
         if (!res.ok) throw new Error("Session expired");
 
         const data = await res.json();
         setAccessToken(data.access_token);
         return true;
-    } catch (err) {
+    } catch {
         setAccessToken(null);
         return false;
     }
 }
+
+export const markSession = () => localStorage.setItem("aa_has_session", "1");
+export const clearSession = () => localStorage.removeItem("aa_has_session");
+export const hasSession = () => !!localStorage.getItem("aa_has_session");
 
 export async function googleSignIn(idToken) {
     const res = await fetch(`${API_URL}/auth/google`, {

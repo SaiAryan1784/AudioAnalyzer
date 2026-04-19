@@ -2624,3 +2624,145 @@ kbd {
     font-size: 0.8rem;
   }
 }
+
+/* ── Additional mobile fixes ─────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Navbar: tighten padding and gaps */
+  .nav-inner {
+    padding: 0 0.75rem;
+  }
+
+  .nav-links {
+    gap: 0.4rem;
+  }
+
+  .nav-link {
+    padding: 0.35rem 0.5rem;
+  }
+
+  /* Quota badge: hide label text, keep icon only to save horizontal space */
+  .quota-unlimited-label {
+    display: none;
+  }
+
+  .quota-label {
+    display: none;
+  }
+
+  .quota-unlimited {
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* Audio player: tighter on mobile */
+  .player-sticky {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Hide volume slider on mobile — users control volume via device */
+  .volume-slider {
+    display: none;
+  }
+
+  /* Upload framework header: allow wrapping so back button doesn't get pushed off */
+  .upload-framework-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Navbar brand: slightly smaller on very small phones */
+  .nav-brand {
+    font-size: 0.95rem;
+  }
+
+  /* Stack upload framework header vertically */
+  .upload-framework-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Framework cards: tighter padding on mobile */
+  .framework-card {
+    padding: 1.125rem;
+  }
+
+  /* Ensure single-column cards on very small screens */
+  .framework-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Home page subtitle: slightly smaller */
+  .home-header p {
+    font-size: 0.875rem;
+  }
+
+  /* Empty state: reduce padding */
+  .empty-state {
+    padding: 2.5rem 1rem;
+  }
+
+  .empty-icon {
+    font-size: 2.25rem;
+  }
+
+  /* Audio player: even more compact */
+  .player-sticky {
+    padding: 0.6rem 0.75rem;
+  }
+
+  /* Time display: less min-width on mobile */
+  .time-display {
+    min-width: 54px;
+  }
+
+  /* Results topbar: stack on small screens */
+  .results-meta {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  /* History: analysis items full width when stacked */
+  .analysis-item {
+    min-width: 160px;
+  }
+
+  /* Dimension tabs: smaller font */
+  .dim-tab {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 375px) {
+  /* Very small phones: further compact navbar */
+  .nav-links {
+    gap: 0.25rem;
+  }
+
+  .nav-link {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .nav-brand {
+    font-size: 0.875rem;
+  }
+
+  /* Home header: smaller on tiny screens */
+  .home-header h1 {
+    font-size: 1.35rem;
+  }
+
+  /* Framework card: less padding */
+  .framework-card {
+    padding: 1rem;
+  }
+
+  /* Main content: tighter horizontal padding */
+  .main-content {
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+  }
+}

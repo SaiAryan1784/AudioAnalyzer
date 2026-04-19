@@ -49,7 +49,7 @@ app.include_router(api_router)
 
 # ── Health ───────────────────────────────────────────────────────────────────────
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 async def health():
     """UptimeRobot ping target — keeps Render from sleeping."""
     return {"status": "ok"}

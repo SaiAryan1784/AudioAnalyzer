@@ -5,14 +5,19 @@
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
-import { getQuota } from "../api";
+import { getQuota, hasSession } from "../api";
 import QuotaBadge from "./QuotaBadge";
 
 export default function Layout() {
-    const { user, logout, isAuthenticated } = useAuth();
+    const { user, logout, isAuthenticated, loading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const [quota, setQuota] = useState(null);
+
+    // Optimistically show the auth nav while session restore is in progress to prevent
+    // the flash of "Log in / Sign up" that would otherwise appear for 1-2s on refresh.
+    // hasSession() is a synchronous localStorage read — zero latency.
+    const showAuthNav = isAuthenticated || (loading && hasSession());
 
     // Re-fetch quota on every route change so it reflects immediately after analysis completes
     useEffect(() => {
@@ -41,7 +46,7 @@ export default function Layout() {
                         </Link>
 
                         <div className="nav-links">
-                            {isAuthenticated ? (
+                            {showAuthNav ? (
                                 <>
                                     <Link to="/" className="nav-link">
                                         Analyze
@@ -56,12 +61,14 @@ export default function Layout() {
                                             remaining={quota.remaining}
                                         />
                                     )}
-                                    <div className="nav-user">
-                                        <span className="user-name">{user?.name || user?.email}</span>
-                                        <button onClick={handleLogout} className="btn-logout">
-                                            Log out
-                                        </button>
-                                    </div>
+                                    {isAuthenticated && (
+                                        <div className="nav-user">
+                                            <span className="user-name">{user?.name || user?.email}</span>
+                                            <button onClick={handleLogout} className="btn-logout">
+                                                Log out
+                                            </button>
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 <>
